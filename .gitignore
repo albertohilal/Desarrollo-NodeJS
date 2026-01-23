@@ -1,0 +1,10 @@
+# Carpetas auxiliares (no evaluables)
+AUXILIAR/
+
+# Archivos temporales
+*.log
+*.tmp
+
+# Sistema
+.DS_Store
+Thumbs.db
