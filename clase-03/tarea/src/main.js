@@ -4,6 +4,7 @@ import express from 'express';
 import connectDB from './config/connectionDB.js';
 import dotenv from 'dotenv';
 import ENVIRONMENT from './config/environment.js';
+import userRouter from './routes/user.router.js';
 
 dotenv.config();
 
@@ -20,6 +21,8 @@ connectDB();
 app.get('/', (req, res) => {
   res.send('¡Bienvenido a la API!');
 });
+
+app.use('/users', userRouter);
 
 // Iniciar el servidor
 app.listen(PORT, () => {
