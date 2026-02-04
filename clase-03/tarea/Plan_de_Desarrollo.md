@@ -5,62 +5,112 @@ Desarrollar una API REST utilizando Node.js, Express y MongoDB, siguiendo las me
 
 ## Estructura del Proyecto
 - **src/**: Contendrá el código fuente de la aplicación.
-  - **routes/**: Definición de las rutas de la API.
-  - **controllers/**: Lógica de negocio de la aplicación.
-  - **models/**: Definición de esquemas y modelos de Mongoose.
   - **config/**: Configuración de la aplicación (por ejemplo, conexión a la base de datos).
-- **tests/**: Pruebas unitarias y de integración.
 - **.env**: Variables de entorno.
 
 ## Pasos de Desarrollo
 1. **Inicialización del Proyecto**:
-   - Crear un nuevo proyecto de Node.js con `npm init`.
-   - Instalar dependencias necesarias: `express`, `mongoose`, `dotenv`.
-   - Configurar el archivo `.env` para las variables de entorno.
-
-2. **Configuración de la Base de Datos**:
-   - Conectar a MongoDB utilizando Mongoose.
-   - Crear esquemas y modelos para los datos.
-
-3. **Definición de Rutas y Controladores**:
-   - Crear rutas para las operaciones CRUD.
-   - Implementar controladores para manejar la lógica de negocio.
-
-4. **Pruebas**:
-   - Escribir pruebas unitarias para los controladores y modelos.
-   - Escribir pruebas de integración para las rutas.
-
-5. **Documentación**:
-   - Documentar la API utilizando Swagger o una herramienta similar.
-
-6. **Despliegue**:
-   - Configurar el proyecto para producción.
-   - Desplegar la aplicación en un servicio de hosting (por ejemplo, Heroku o AWS).
-
-## Cronograma
-1. Inicialización del proyecto y configuración de la base de datos.
-   - Crear el archivo `package.json` con `npm init -y`.
-     ```bash
-     npm init -y
+   - Crear un nuevo proyecto de Node.js con `npm init -y`.
+   - Configurar el archivo `package.json` para incluir el script de desarrollo:
+     ```json
+     "scripts": {
+       "dev": "node --watch src/main.js"
+     }
      ```
-   
-   - Crear el archivo `/home/beto/Documentos/Github/Desarrollo-NodeJS/clase-03/tarea/src/main.js` con el código base para iniciar el servidor.
 
-   - Configurar el archivo `package.json` según el esquema del docente.
-
-2. Instalación de dependencias iniciales.
-   - Instalar `dotenv` para la gestión de variables de entorno.
+2. **Instalación de Dependencias**:
+   - Instalar `express` para manejar las rutas y solicitudes HTTP:
+     ```bash
+     npm install express
+     ```
+   - Instalar `dotenv` para la gestión de variables de entorno:
      ```bash
      npm install dotenv
      ```
-   - Instalar `mongoose` para manejar la conexión y las operaciones con MongoDB.
+   - Instalar `mongoose` para manejar la conexión y las operaciones con MongoDB:
      ```bash
      npm install mongoose
      ```
 
-3. Implementación de rutas y controladores.
-4. Pruebas y documentación.
-5. Despliegue y ajustes finales.
+3. **Configuración de la Base de Datos**:
+   - Crear el archivo `src/config/connectionDB.js` con la lógica de conexión a MongoDB utilizando Mongoose:
+     ```javascript
+     import mongoose from 'mongoose';
+     import ENVIRONMENT from './environment.js';
+
+     const connectDB = async () => {
+       try {
+         await mongoose.connect(ENVIRONMENT.MONGO_DB_CONNECTION_STRING);
+         console.log('Conexión a la base de datos exitosa');
+       } catch (error) {
+         console.error('Error al conectar a la base de datos:', error);
+         process.exit(1);
+       }
+     };
+
+     export default connectDB;
+     ```
+
+4. **Creación del Servidor**:
+   - Crear el archivo `src/main.js` con el siguiente contenido:
+     ```javascript
+     import express from 'express';
+     import connectDB from './config/connectionDB.js';
+     import dotenv from 'dotenv';
+
+     dotenv.config();
+
+     const app = express();
+     const PORT = process.env.PORT || 3000;
+
+     // Middleware
+     app.use(express.json());
+
+     // Conexión a la base de datos
+     connectDB();
+
+     // Rutas
+     app.get('/', (req, res) => {
+       res.send('¡Bienvenido a la API!');
+     });
+
+     // Iniciar el servidor
+     app.listen(PORT, () => {
+       console.log(`Servidor corriendo en http://localhost:${PORT}`);
+     });
+     ```
+
+5. **Configuración de Variables de Entorno**:
+   - Crear un archivo `.env` en la raíz del proyecto con el siguiente contenido:
+     ```env
+     MONGO_DB_CONNECTION_STRING=<TU_URI_DE_MONGODB>
+     PORT=8080
+     ```
+
+## Actualización de Configuración de Mongoose
+
+Se eliminaron las opciones `useNewUrlParser` y `useUnifiedTopology` de la configuración de Mongoose en el archivo `connectionDB.js`. Estas opciones ya no son necesarias en las versiones más recientes del controlador de MongoDB (a partir de la versión 4.0.0) y serán eliminadas en futuras versiones. Esto asegura que el código esté actualizado y evita advertencias innecesarias durante la ejecución del servidor.
+
+El archivo `connectionDB.js` actualizado es el siguiente:
+
+```javascript
+import mongoose from 'mongoose';
+import ENVIRONMENT from './environment.js';
+
+const connectDB = async () => {
+  try {
+    await mongoose.connect(ENVIRONMENT.MONGO_DB_CONNECTION_STRING);
+    console.log('Conexión a la base de datos exitosa');
+  } catch (error) {
+    console.error('Error al conectar a la base de datos:', error);
+    process.exit(1);
+  }
+};
+
+export default connectDB;
+```
+
+El archivo `environment.js` centraliza las variables de entorno, lo que facilita su acceso y mejora la organización del código. Es importante mantener este archivo actualizado con todas las variables de entorno necesarias para el proyecto.
 
 ## Herramientas y Tecnologías
 - **Node.js**: Entorno de ejecución para JavaScript.
@@ -68,9 +118,7 @@ Desarrollar una API REST utilizando Node.js, Express y MongoDB, siguiendo las me
 - **MongoDB**: Base de datos NoSQL.
 - **Mongoose**: ODM para MongoDB.
 - **dotenv**: Gestión de variables de entorno.
-- **Jest**: Framework de pruebas.
 
 ## Notas Adicionales
 - Seguir las mejores prácticas de desarrollo.
 - Mantener el código modular y reutilizable.
-- Realizar revisiones de código periódicas.
